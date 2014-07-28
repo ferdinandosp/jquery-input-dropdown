@@ -2,7 +2,7 @@
 
 # Demo
 
-[http://lab.miguelmota.com/jquery-input-dropdown/demo/](http://lab.miguelmota.com/jquery-input-dropdown/demo/)
+[http://lab.miguelmota.com/jquery-input-dropdown/](http://lab.miguelmota.com/jquery-input-dropdown/)
 
 # Install
 
