@@ -6,7 +6,7 @@
 
 # Install
 
-Available via [bower](http://bower.io/)
+Available via [bower](http://bower.io/):
 
 ```bash
 bower install jquery-inputdropdown
@@ -14,11 +14,15 @@ bower install jquery-inputdropdown
 
 # Example
 
+HTML:
+
 ```html
 <input type="text" class="indpn-input" placeholder="Country">
 <span class="indpn-dropdown-arrow"></span>
 <div class="indpn-dropdown"></div>
 ```
+
+JavaScript:
 
 ```javascript
 var countries = [{"id":0,"text":"Abkhazia"},{"id":1,"text":"Aland"},{"id":2,"text":"Albania"}];
