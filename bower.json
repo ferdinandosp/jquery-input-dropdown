@@ -1,0 +1,17 @@
+{
+  "name": "jquery-inputdropdown",
+  "version": "0.0.1",
+  "authors": [
+    "Miguel Mota <miguelmota2@gmail.com>"
+  ],
+  "description": "A jQuery plugin to display an input dropdown.",
+  "main": "jquery.inputdropdown.js",
+  "keywords": [
+    "jquery",
+    "input",
+    "dropdown",
+    "typeahead"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/miguelmota/jquery-input-dropdown"
+}
