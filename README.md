@@ -19,7 +19,6 @@ HTML:
 ```html
 <input type="text" class="indpn-input" placeholder="Country">
 <span class="indpn-dropdown-arrow"></span>
-<div class="indpn-dropdown"></div>
 ```
 
 JavaScript:
@@ -37,8 +36,7 @@ $('.indpn-input').inputDropdown({
         console.log(selected);
     },
     toggleButton: $('.indpn-dropdown-arrow'),
-    container: $('.indpn-container'),
-    dropdownContainer: $('.indpn-dropdown'),
+    dropdownClass: '.indpn-dropdown',
     image: function(item) {
         return ['/images/flags/32/',item.replace(/\s+/, '-'),'.png'].join('');
     },

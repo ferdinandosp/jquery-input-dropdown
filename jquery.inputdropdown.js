@@ -1,7 +1,9 @@
 (function($) {
 
+    version = '0.0.2';
+
     $.fn.inputDropdown = function(options) {
-        var settings, $container, $input, $dropdownContainer, $listItems, $dropdownArrow, list, dropdownHeight, dropdownOpened, selectedValue;
+        var settings, $input, $listItems, $dropdownArrow, $dropdown, $body, list, dropdownHeight, dropdownOpened, selectedValue, currentBackgroundImageValue;
 
         function log(args) {
             args = [].slice.call(arguments);
@@ -36,8 +38,16 @@
             return str.replace(/\s+/, '-');
         }
 
+        function blur() {
+            document.activeElement.blur();
+        }
+
+        function lowercase(v) {
+            return v.toLowerCase();
+        }
+
         function buildList(o, i) {
-            var item = ['<li><span>',o,'</span></li>'];
+            var item = ['<li>','<span>',o,'</span>','</li>'];
             if (settings.image) {
                 item.splice(1,0,'<img src="',settings.image(o),'" alt="">');
             }
@@ -55,10 +65,17 @@
             $input.val(value);
             closeDropdown();
             setSelectedValue(value);
+            blur();
         }
 
         function selectFirst() {
             listItemSelect.call($listItems.filter(':visible').eq(0));
+        }
+
+        function select(value) {
+            listItemSelect.call($listItems.filter(function() {
+                return lowercase($(this).text()) === lowercase(value);
+            }).eq(0));
         }
 
         function setSelectedValue(value) {
@@ -67,11 +84,20 @@
             settings.onSelect(value);
         }
 
+        function backgroundImageValue() {
+            var url = $input.css('background-image');
+            url = /^url\((['"]?)(.*)\1\)$/.exec(url);
+            url = url ? url[2] : '';
+            url = url.replace([window.location.protocol,'//',window.location.host].join(''), '');
+            return url;
+        }
+
         function updateInputBg(imageUrl) {
             var image = 'none';
             if (imageUrl) {
                 image = 'url(' + imageUrl + ')';
             }
+            currentBackgroundImageValue = imageUrl;
             $input.css({
                 'background-image': image
             });
@@ -81,24 +107,27 @@
             if (dropdownOpened) {
                 closeDropdown();
             } else {
-                $container.addClass('opened');
-                $dropdownContainer.show();
+                $body.addClass('input-dropdown-opened');
+                $dropdown.show();
                 dropdownOpened = true;
+                $dropdown.show();
                 updateDropdownPosition();
             }
         }
 
         function closeDropdown() {
-            $container.removeClass('opened');
-            $dropdownContainer.hide();
+            $body.removeClass('input-dropdown-opened');
+            $dropdown.hide();
             dropdownOpened = false;
         }
 
         function updateDropdownPosition() {
-            var offsetTop = $dropdownContainer.offset().top,
-                offsetLeft = $dropdownContainer.offset().left;
+            var offsetTop = $input.offset().top + $input.outerHeight(),
+                offsetLeft = $input.offset().left;
+            log('offsetTop: ' + offsetTop);
+            log('offsetLeft: ' + offsetLeft);
             dropdownHeight = $(window).height() - offsetTop - 20;
-            $dropdownContainer.css({
+            $dropdown.css({
                 'max-height': dropdownHeight,
                 position: 'fixed',
                 top: offsetTop,
@@ -119,12 +148,26 @@
                 return;
             }
 
+            if (e.keyCode === 8 || e.keyCode === 46) {
+               currentBackgroundImageValue = null;
+            }
+
             if (!dropdownOpened) {
                 $input.on('keyup', openDropdown);
             }
 
             if (settings.image && settings.defaultImage) {
-                updateInputBg(settings.defaultImage);
+                log('backgroundImage: ' + backgroundImageValue());
+                log('currentBackgroundImage: ' + currentBackgroundImageValue);
+                if (backgroundImageValue() !== currentBackgroundImageValue) {
+                    log('Image set');
+                    updateInputBg(settings.defaultImage);
+                }
+            }
+
+            if (~$.map(settings.data, lowercase).indexOf(lowercase(value))) {
+                log('Match: ' + value);
+                select(value);
             }
 
             $listItems.each(function() {
@@ -146,15 +189,19 @@
             }
         }
 
+        function stripExceptLetters(c) {
+            return c.replace(/[^a-zA-Z-_]/, '');
+        }
+
         function init() {
 
             settings = $.extend({
-                container: null,
                 onSelect: null,
                 data: null,
-                toggleButtonl: null,
+                toggleButton: null,
                 image: false,
-                debug: false
+                debug: false,
+                dropdownClass: '.dropdown'
             }, options);
 
             if (not(isTypeOf(settings.image, 'function'))) {
@@ -171,29 +218,35 @@
                 fail(new TypeError('data must evaluate to an array'));
             }
 
-            $container = $(settings.container);
+            $body = $('body');
             $input = this;
-            $dropdownContainer = $(settings.dropdownContainer);
-            $dropdownArrow = $(settings.toggleButton);
             dropdownOpened = false;
 
-            $dropdownContainer.hide();
-
-            list = ['<ul>',
+            list = ['<div class="',stripExceptLetters(settings.dropdownClass),'"><ul>',
                     $.map(settings.data, buildList).join(''),
-                    '</ul>'].join('');
+                    '</ul></div>'].join('');
 
-            $dropdownContainer.html(list);
-            $listItems = $dropdownContainer.find('li');
+            $body.append(list);
+            $dropdown = $(settings.dropdownClass);
+            $dropdown.hide();
+            $listItems = $dropdown.find('li');
+            currentBackgroundImageValue = settings.defaultImage;
 
             $input.on('keyup.input-dropdown', inputKeyup);
             $listItems.on('click.input-dropdown', listItemSelect);
-            $dropdownArrow.on('click.input-dropdown', openDropdown);
             $(document).on('keyup.input-dropdown', docKeyup);
             $(window).on('resize.input-dropdown', updateDropdownPosition);
+            if (settings.toggleButton) {
+                $dropdownArrow = $(settings.toggleButton);
+                $dropdownArrow.on('click.input-dropdown', openDropdown);
+            }
         }
 
         init.apply(this, arguments);
+
+        return {
+          version: version
+        };
 
     };
 
