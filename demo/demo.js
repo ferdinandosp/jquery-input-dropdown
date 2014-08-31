@@ -14,8 +14,7 @@
             //console.log('selected:', selected);
         },
         toggleButton: $('.indpn-dropdown-arrow'),
-        container: $('.indpn-container'),
-        dropdownContainer: $('.indpn-dropdown'),
+        dropdownClass: '.indpn-dropdown',
         image: function(item) {
             return ['images/flags/32/',dashify(item),'.png'].join('');
         },
