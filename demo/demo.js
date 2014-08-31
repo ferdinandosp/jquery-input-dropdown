@@ -16,7 +16,7 @@
         toggleButton: $('.indpn-dropdown-arrow'),
         dropdownClass: '.indpn-dropdown',
         image: function(item) {
-            return ['images/flags/32/',dashify(item),'.png'].join('');
+            return ['images/flags/32/',item,'.png'].join('');
         },
         defaultImage: 'images/search.png',
         debug: true
